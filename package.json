@@ -1,0 +1,34 @@
+{
+  "name": "water-quality-api",
+  "version": "1.0.0",
+  "description": "API to ingest and query water quality data",
+  "main": "index.js",
+  "scripts": {
+    "build": "npm run yml-to-json && tsc --build",
+    "sl-deploy": "serverless deploy",
+    "sl-remove": "serverless remove",
+    "yml-to-json": "npx swagger-cli bundle api_spec/openapi.yml -r -o src/openapi.json",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@eslint/js": "^9.24.0",
+    "@types/aws-lambda": "^8.10.149",
+    "@types/node": "^22.14.0",
+    "eslint": "^9.24.0",
+    "globals": "^16.0.0",
+    "openapi-format": "^1.25.2",
+    "swagger-cli": "^4.0.4",
+    "typescript": "^5.8.3",
+    "typescript-eslint": "^8.29.1"
+  },
+  "dependencies": {
+    "@aws-sdk/client-dynamodb": "^3.787.0",
+    "@aws-sdk/util-dynamodb": "^3.787.0",
+    "ajv": "^8.17.1",
+    "ajv-errors": "^3.0.0",
+    "ajv-formats": "^3.0.1",
+    "aws-lambda": "^1.0.7"
+  }
+}

@@ -1,0 +1,100 @@
+# "org" ensures this Service is used with the correct Serverless Framework Access Key.
+org: gaganserverless
+# "service" is the name of this project. This will also be added to your AWS resource names.
+service: water-quality-service
+
+provider:
+  name: aws
+  runtime: nodejs20.x
+  iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action:
+            - dynamodb:Query
+            - dynamodb:Scan
+            - dynamodb:GetItem
+            - dynamodb:PutItem
+            - dynamodb:UpdateItem
+            - dynamodb:DeleteItem
+          Resource: 
+            - "arn:aws:dynamodb:*:*:table/*"
+
+functions:
+  labData:
+    handler: dist/handlers/lab-data.handler
+    events:
+      - httpApi:
+          path: /lab-results
+          method: post
+    environment:
+      LAB_DATA_TABLE: lab-data
+  sensorData:
+    handler: dist/handlers/sensor-data.handler
+    events:
+      - httpApi:
+          path: /sensor-data
+          method: post
+    environment:
+      SENSOR_DATA_TABLE: sensor-data
+  testKitData:
+    handler: dist/handlers/test-kit-data.handler
+    events:
+      - httpApi:
+          path: /test-kits
+          method: post
+    environment:
+      TEST_KIT_DATA_TABLE: test-kit-data
+  
+
+resources:
+  Resources:
+    LabDataTable:
+      Type: 'AWS::DynamoDB::Table'
+      DeletionPolicy: Delete
+      Properties:
+        AttributeDefinitions:
+          -
+            AttributeName: dataid
+            AttributeType: S
+        KeySchema:
+          -
+            AttributeName: dataid
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+        TableName: lab-data
+    SensorDataTable:
+      Type: 'AWS::DynamoDB::Table'
+      DeletionPolicy: Delete
+      Properties:
+        AttributeDefinitions:
+          -
+            AttributeName: dataid
+            AttributeType: S
+        KeySchema:
+          -
+            AttributeName: dataid
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+        TableName: sensor-data
+
+    TestKitDataTable: 
+      Type: 'AWS::DynamoDB::Table'
+      DeletionPolicy: Delete
+      Properties:
+        AttributeDefinitions:
+          -
+            AttributeName: dataid
+            AttributeType: S
+        KeySchema:
+          -
+            AttributeName: dataid
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+        TableName: test-kit-data

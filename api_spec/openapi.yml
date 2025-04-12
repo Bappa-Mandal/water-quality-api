@@ -1,0 +1,148 @@
+openapi: 3.0.3
+info:
+  title: Water Quality Data Hub API
+  description: API for water quality data with direct chemical parameters in schema
+  version: 2.1.0
+
+paths:
+  /sensor-data:
+    post:
+      summary: Submit sensor readings
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SensorReading'
+      responses:
+        '202':
+          description: Sensor data accepted
+
+  /lab-results:
+    post:
+      summary: Submit laboratory results
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LabResult'
+      responses:
+        '201':
+          description: Lab result stored
+
+  /test-kits:
+    post:
+      summary: Submit test kit results
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TestKitResult'
+      responses:
+        '201':
+          description: Test kit result recorded
+
+
+components:
+  schemas:
+    WaterQualityParams:
+      type: object
+      required:
+        - timestamp
+      properties:
+        timestamp:
+          type: string
+          format: date-time
+        locationId:
+          type: string
+        sourceType:
+          type: string
+          enum: [sensor, lab, test_kit]
+        # Chemical Parameters
+        pH:
+          type: number
+          minimum: 0
+          maximum: 14
+          example: 7.5
+        chlorine:
+          type: number
+          minimum: 0
+          example: 2.1
+          description: Free chlorine in mg/L
+        turbidity:
+          type: number
+          minimum: 0
+          example: 1.2
+          description: Turbidity in NTU
+        colour:
+          type: string
+          enum: [clear, slightly_colored, colored, highly_colored]
+        temperature:
+          type: number
+          description: Water temperature in °C
+        totalDissolvedSolids:
+          type: number
+          description: TDS in mg/L
+
+    SensorReading:
+      allOf:
+        - $ref: '#/components/schemas/WaterQualityParams'
+        - type: object
+          required:
+            - deviceId
+          properties:
+            deviceId:
+              type: string
+            firmwareVersion:
+              type: string
+            batteryLevel:
+              type: number
+              minimum: 0
+              maximum: 100
+
+    LabResult:
+      allOf:
+        - $ref: '#/components/schemas/WaterQualityParams'
+        - type: object
+          required:
+            - labId
+          properties:
+            labId:
+              type: string
+            certification:
+              type: string
+            testMethod:
+              type: string
+            analyst:
+              type: string
+            qualityControl:
+              type: object
+              properties:
+                passed:
+                  type: boolean
+                notes:
+                  type: string
+
+    TestKitResult:
+      allOf:
+        - $ref: '#/components/schemas/WaterQualityParams'
+        - type: object
+          required:
+            - kitId
+            - userId
+          properties:
+            kitId:
+              type: string
+            kitType:
+              type: string
+            userId:
+              type: string
+            photoEvidence:
+              type: string
+              format: uri
+
+    
+
+ 
