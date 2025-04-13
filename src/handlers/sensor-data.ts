@@ -52,8 +52,9 @@ export const handler = async (event: APIGatewayProxyEvent, context: Context): Pr
             throw new Error('DynamoDB table name not configured');
         }
         const dataid = requestData.deviceId + requestData.timestamp;
+        const sampleTimeStamp = requestData.timestamp.substring(0, 10);
         const itemData = {
-            ...requestData, dataid: dataid
+            ...requestData, dataid: dataid, sampleTimeStamp: sampleTimeStamp
         };
         const params = {
             TableName: tableName,

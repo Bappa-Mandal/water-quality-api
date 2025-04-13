@@ -52,8 +52,9 @@ export const handler = async (event: APIGatewayProxyEvent, context: Context): Pr
         }
 
         const dataid = requestData.labId + requestData.timestamp;
+        const sampleTimeStamp = requestData.timestamp.substring(0, 10);
         const itemData = {
-            ...requestData, dataid: dataid
+            ...requestData, dataid: dataid, sampleTimeStamp: sampleTimeStamp
         };
         const params = {
             TableName: tableName,

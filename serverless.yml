@@ -1,11 +1,20 @@
-# "org" ensures this Service is used with the correct Serverless Framework Access Key.
 org: gaganserverless
-# "service" is the name of this project. This will also be added to your AWS resource names.
 service: water-quality-service
 
 provider:
   name: aws
   runtime: nodejs20.x
+  apiGateway:
+    apiKeys:
+      - waterApiKey
+    usagePlan:
+      quota:
+        limit: 50000
+        offset: 1
+        period: MONTH
+      throttle:
+        burstLimit: 200
+        rateLimit: 100
   iam:
     role:
       statements:
@@ -24,28 +33,36 @@ functions:
   labData:
     handler: dist/handlers/lab-data.handler
     events:
-      - httpApi:
+      - http:
           path: /lab-results
           method: post
+          private: true
     environment:
       LAB_DATA_TABLE: lab-data
   sensorData:
     handler: dist/handlers/sensor-data.handler
     events:
-      - httpApi:
+      - http:
           path: /sensor-data
           method: post
+          private: true
     environment:
       SENSOR_DATA_TABLE: sensor-data
   testKitData:
     handler: dist/handlers/test-kit-data.handler
     events:
-      - httpApi:
+      - http:
           path: /test-kits
           method: post
+          private: true
     environment:
       TEST_KIT_DATA_TABLE: test-kit-data
-  
+  waterBot:
+    handler: dist/handlers/water-quality-bot.handler
+    environment:
+      LAB_DATA_TABLE: lab-data
+      SENSOR_DATA_TABLE: sensor-data
+      TEST_KIT_DATA_TABLE: test-kit-data
 
 resources:
   Resources:
